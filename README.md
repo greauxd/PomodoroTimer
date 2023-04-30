@@ -1,3 +1,0 @@
-﻿# Pomodoro-Timer
-
-This is a simple Pomodoro timer created using React Native, this program will be able to be used both on the web as well as a mobile application! It will display two input boxes where the user can enter the amount of time they would like to work, then the amount of time they would like to have their break be! For example, a user can set the work timer for 30 minutes, and a break timer for 5 minutes! So once the users 30 minute work timer is up the user is notified, the 5 minute break timer automatically starts, and once the 5 minute break timer is up, the user will again be notified andthe application will repeat automatically until the user manually stops the timer
