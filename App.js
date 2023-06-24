@@ -20,12 +20,6 @@ export default function App() {
     if(buttonTitle == 'Start'){
       setButtonTitle('Stop');
       startTimer();
-      if(secondsOfWork < 10){
-        
-      }
-      if(secondsOfBreak < 10){
-        
-      }
     }
     else{ 
       setButtonTitle('Start');
@@ -36,15 +30,19 @@ export default function App() {
   const[isTextFieldVisible, setIsTextFieldVisible] = useState(true);
   const[isTimeVisible, setIsTimeVisible] = useState(false);
 
-    const [minutesOfWork, setMinutesOfWork] = useState(0)
-    const [minutesOfBreak, setMinutesOfBreak] = useState(0)
-    const [secondsOfWork, setSecondsOfWork] = useState(0)
-    const [secondsOfBreak, setSecondsOfBreak] = useState(0)
+  const [minutesOfWork, setMinutesOfWork] = useState(0)
+  const [minutesOfBreak, setMinutesOfBreak] = useState(0)
+  const [secondsOfWork, setSecondsOfWork] = useState(0)
+  const [secondsOfBreak, setSecondsOfBreak] = useState(0)
+
+  const [isWorkRunning, setIsWorkRunning] = useState(false);
+  const [isBreakRunning, setIsBreakRunning] = useState(false);
 
   const startTimer = () => {
     setIsTextFieldVisible(false);
     setIsTimeVisible(true);
-    setMinutesOfWork(minutesOfWork)
+    setIsWorkRunning(true);
+    setMinutesOfWork(minutesOfWork);
     if(secondsOfWork < 10){
     setSecondsOfWork(secondsOfWork.toString().padStart(2, 0));
     }
@@ -52,6 +50,49 @@ export default function App() {
     setSecondsOfBreak(secondsOfBreak.toString().padStart(2, 0));
     }
     }
+
+    useEffect(() => {
+      let workTimer;
+      if (isWorkRunning) {
+        workTimer = setInterval(() => {
+          if (minutesOfWork === 0 && secondsOfWork === 0){
+            clearInterval(workTimer);
+            setIsWorkRunning(false);
+            alert("Work Timer finished");
+            setIsBreakRunning(true);
+          } else {
+            if(secondsOfWork > 0){
+              setSecondsOfWork(secondsOfWork - 1);
+            } else {
+              setMinutesOfWork(minutesOfWork - 1);
+              setSecondsOfWork(59);
+            }
+          }
+        }, 1000);
+      }
+      return () => clearInterval(workTimer);
+    });
+
+    useEffect(() => {
+      let breakTimer;
+      if (isBreakRunning) {
+        breakTimer = setInterval(() => {
+          if (minutesOfBreak === 0 && secondsOfBreak === 0){
+            clearInterval(breakTimer);
+            setIsBreakRunning(false);
+            alert("Break Timer Finished");
+          } else {
+            if(secondsOfBreak > 0){
+              setSecondsOfBreak(secondsOfBreak - 1);
+            } else {
+              setMinutesOfBreak(minutesOfBreak - 1);
+              setSecondsOfBreak(59);
+            }
+          }
+        }, 1000);
+      }
+      return () => clearInterval(breakTimer);
+    })
   
 
   const stopTimer = () => {
