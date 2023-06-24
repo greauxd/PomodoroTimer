@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TextComponent, FlatList, Button, TouchableHighlightBase, InputAccessoryView, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TextComponent, FlatList, Button, TouchableHighlightBase, InputAccessoryView, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 import { React, useState, useEffect } from 'react';
 
 const Col = ({ numRows, children}) => {
@@ -42,7 +42,8 @@ export default function App() {
     setIsTextFieldVisible(false);
     setIsTimeVisible(true);
     setIsWorkRunning(true);
-    setMinutesOfWork(minutesOfWork);
+    setSecondsOfWork(0);
+    setSecondsOfBreak(0);
     if(secondsOfWork < 10){
     setSecondsOfWork(secondsOfWork.toString().padStart(2, 0));
     }
@@ -58,8 +59,7 @@ export default function App() {
           if (minutesOfWork === 0 && secondsOfWork === 0){
             clearInterval(workTimer);
             setIsWorkRunning(false);
-            alert("Work Timer finished");
-            setIsBreakRunning(true);
+            Alert.alert("Work Timer finished", "", [{text: "Start Break",onPress: () => setIsBreakRunning(true)}]);
           } else {
             if(secondsOfWork > 0){
               setSecondsOfWork(secondsOfWork - 1);
@@ -80,10 +80,12 @@ export default function App() {
           if (minutesOfBreak === 0 && secondsOfBreak === 0){
             clearInterval(breakTimer);
             setIsBreakRunning(false);
-            alert("Break Timer Finished");
+            Alert.alert("Break Timer Finished");
+            changeTitle();
           } else {
             if(secondsOfBreak > 0){
               setSecondsOfBreak(secondsOfBreak - 1);
+
             } else {
               setMinutesOfBreak(minutesOfBreak - 1);
               setSecondsOfBreak(59);
@@ -98,6 +100,8 @@ export default function App() {
   const stopTimer = () => {
     setIsTimeVisible(false);
     setIsTextFieldVisible(true);
+    setIsWorkRunning(false);
+    setIsBreakRunning(false);
   }
   
   return (
