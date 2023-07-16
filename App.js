@@ -15,6 +15,7 @@ const Row = ({ children }) => (
 export default function App() {
 
   const [buttonTitle, setButtonTitle] = useState('Start');
+  const [pauseTitle, setPauseTitle] = useState('Play');
 
   const changeTitle = () => {
     if(buttonTitle == 'Start'){
@@ -26,6 +27,27 @@ export default function App() {
       stopTimer();
     }
   };
+
+  const changePause = () => {
+    if(pauseTitle == 'Pause'){
+      setPauseTitle('Play');
+      if(isWorkRunning == true){
+        setIsWorkRunning(false);
+      }
+      else{
+        setIsBreakRunning(false);
+      }
+    }
+    else {
+      setPauseTitle('Pause');
+      if(minutesOfWork != 0 || secondsOfWork != 0){
+        setIsWorkRunning(true);
+      }
+      else{
+        setIsBreakRunning(true);
+      }
+    }
+  }
 
   const[isTextFieldVisible, setIsTextFieldVisible] = useState(true);
   const[isTimeVisible, setIsTimeVisible] = useState(false);
@@ -44,6 +66,7 @@ export default function App() {
     setIsWorkRunning(true);
     setSecondsOfWork(0);
     setSecondsOfBreak(0);
+    changePause();
     if(secondsOfWork < 10){
     setSecondsOfWork(secondsOfWork.toString().padStart(2, 0));
     }
@@ -56,14 +79,18 @@ export default function App() {
       let workTimer;
       if (isWorkRunning) {
         workTimer = setInterval(() => {
-          if (minutesOfWork === 0 && secondsOfWork === 0){
+          if (minutesOfWork === 0 && secondsOfWork === 0 || minutesOfWork === 0 && secondsOfWork === '00'){
             clearInterval(workTimer);
             setIsWorkRunning(false);
             Alert.alert("Work Timer finished", "", [{text: "Start Break",onPress: () => setIsBreakRunning(true)}]);
           } else {
-            if(secondsOfWork > 0){
-              setSecondsOfWork(secondsOfWork - 1);
-            } else {
+            if(secondsOfWork <= 10 && secondsOfWork > 0){
+              setSecondsOfWork((secondsOfWork-1).toString().padStart(2, '0'));
+              }
+            else if(secondsOfWork > 0){
+                setSecondsOfWork(secondsOfWork - 1);
+            } 
+            else {
               setMinutesOfWork(minutesOfWork - 1);
               setSecondsOfWork(59);
             }
@@ -77,15 +104,17 @@ export default function App() {
       let breakTimer;
       if (isBreakRunning) {
         breakTimer = setInterval(() => {
-          if (minutesOfBreak === 0 && secondsOfBreak === 0){
+          if (minutesOfBreak === 0 && secondsOfBreak === 0 || minutesOfBreak === 0 && secondsOfBreak === '00'){
             clearInterval(breakTimer);
             setIsBreakRunning(false);
             Alert.alert("Break Timer Finished");
             changeTitle();
           } else {
-            if(secondsOfBreak > 0){
+            if(secondsOfBreak <= 10 && secondsOfBreak > 0){
+              setSecondsOfBreak((secondsOfBreak-1).toString().padStart(2, '0'));
+            }
+            else if(secondsOfBreak > 0){
               setSecondsOfBreak(secondsOfBreak - 1);
-
             } else {
               setMinutesOfBreak(minutesOfBreak - 1);
               setSecondsOfBreak(59);
@@ -94,7 +123,7 @@ export default function App() {
         }, 1000);
       }
       return () => clearInterval(breakTimer);
-    })
+    });
   
 
   const stopTimer = () => {
@@ -102,6 +131,11 @@ export default function App() {
     setIsTextFieldVisible(true);
     setIsWorkRunning(false);
     setIsBreakRunning(false);
+    setMinutesOfWork(0);
+    setSecondsOfWork(0);
+    setMinutesOfBreak(0);
+    setSecondsOfBreak(0);
+    setPauseTitle('Play');
   }
   
   return (
@@ -123,7 +157,7 @@ export default function App() {
       <Row>
         <Col numRows={3}>
           {isTextFieldVisible && (
-          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Work' onChangeText={setMinutesOfWork} value={minutesOfWork}></TextInput>
+          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Work' onChangeText={setMinutesOfWork}></TextInput>
           )}
           {isTimeVisible && (
             <Text style={styles.time} textAlign='center'>{minutesOfWork}:{secondsOfWork}</Text>
@@ -131,7 +165,7 @@ export default function App() {
         </Col>
         <Col numRows={3}>
           {isTextFieldVisible && (
-          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Break' onChangeText={setMinutesOfBreak} value={minutesOfBreak}></TextInput>
+          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Break' onChangeText={setMinutesOfBreak}></TextInput>
           )}
           {isTimeVisible && (
             <Text style={styles.time} textAlign='center'>{minutesOfBreak}:{secondsOfBreak}</Text>
@@ -141,6 +175,9 @@ export default function App() {
       <Row>
         <Col numRows={4}>
           <Button title={buttonTitle} onPress={changeTitle}/>
+        </Col>
+        <Col numRows={4}>
+          <Button title={pauseTitle} onPress={changePause}/>
         </Col>
       </Row>
       <StatusBar style="auto" />
