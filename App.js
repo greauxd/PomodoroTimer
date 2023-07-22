@@ -60,12 +60,17 @@ export default function App() {
   const [isWorkRunning, setIsWorkRunning] = useState(false);
   const [isBreakRunning, setIsBreakRunning] = useState(false);
 
+  const[defaultWorkTimerValue, setDefaultWorkTimerValue] = useState("");
+  const[defaultBreakTimerValue, setDefaultBreakTimerValue] = useState("");
+
   const startTimer = () => {
     setIsTextFieldVisible(false);
     setIsTimeVisible(true);
     setIsWorkRunning(true);
     setSecondsOfWork(0);
     setSecondsOfBreak(0);
+    setDefaultWorkTimerValue(minutesOfWork.toString());
+    setDefaultBreakTimerValue(minutesOfBreak.toString());
     changePause();
     if(secondsOfWork < 10){
     setSecondsOfWork(secondsOfWork.toString().padStart(2, 0));
@@ -131,9 +136,17 @@ export default function App() {
     setIsTextFieldVisible(true);
     setIsWorkRunning(false);
     setIsBreakRunning(false);
+    if(defaultWorkTimerValue != ""){
+      setMinutesOfWork(defaultWorkTimerValue);
+    }
+    if(defaultBreakTimerValue != ""){
+      setMinutesOfBreak(defaultBreakTimerValue)
+    }
+    else{
     setMinutesOfWork(0);
-    setSecondsOfWork(0);
     setMinutesOfBreak(0);
+    }
+    setSecondsOfWork(0);
     setSecondsOfBreak(0);
     setPauseTitle('Play');
   }
@@ -157,7 +170,7 @@ export default function App() {
       <Row>
         <Col numRows={3}>
           {isTextFieldVisible && (
-          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Work' onChangeText={setMinutesOfWork}></TextInput>
+          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Work' onChangeText={setMinutesOfWork} clearButtonMode='while-editing' defaultValue={defaultWorkTimerValue}></TextInput>
           )}
           {isTimeVisible && (
             <Text style={styles.time} textAlign='center'>{minutesOfWork}:{secondsOfWork}</Text>
@@ -165,7 +178,7 @@ export default function App() {
         </Col>
         <Col numRows={3}>
           {isTextFieldVisible && (
-          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Break' onChangeText={setMinutesOfBreak}></TextInput>
+          <TextInput style={styles.input} keyboardType="numeric" textAlign='center' placeholder='Minutes of Break' onChangeText={setMinutesOfBreak} clearButtonMode='while-editing' defaultValue={defaultBreakTimerValue}></TextInput>
           )}
           {isTimeVisible && (
             <Text style={styles.time} textAlign='center'>{minutesOfBreak}:{secondsOfBreak}</Text>
@@ -174,10 +187,10 @@ export default function App() {
       </Row>
       <Row>
         <Col numRows={4}>
-          <Button title={buttonTitle} onPress={changeTitle}/>
+          <Button style={styles.button} title={buttonTitle} onPress={changeTitle}/>
         </Col>
         <Col numRows={4}>
-          <Button title={pauseTitle} onPress={changePause}/>
+          <Button style={styles.button} title={pauseTitle} onPress={changePause}/>
         </Col>
       </Row>
       <StatusBar style="auto" />
@@ -243,6 +256,6 @@ const styles = StyleSheet.create({
   },
   "4col":{
     flex:2,
-    margin:'-25%',
+    marginTop: '-25%'
   }
 });
